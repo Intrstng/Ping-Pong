@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Ping pong</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Ping pong</title>
 </head>
 <body>
-    <canvas id="clock" width="600px" height="600px">Ваш браузер не поддерживает Canvas</canvas>
+  <div class="controls">
+    <button class="start-btn start-btn_hover start-btn_active"><img src="https://img.icons8.com/ios/20/null/ping-pong.png"/>Start!</button>
+    <div class="scores">
+      <div class="score-player1"></div>
+      <div class="score-player1"></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field__center"><span class="field__counter"></span></div>
+    </div>
+  </div>
+  <div class="racket-1"></div>
+  <div class="racket-2"></div>
+
 <script src="scripts.js"></script>
 </body>
 </html>
