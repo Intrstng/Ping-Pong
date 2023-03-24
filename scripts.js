@@ -22,7 +22,7 @@ function Settings(field) {
     currentPos_Y: this.ballPositionStart_Y,
   };
   this.rocketSpeed = 14;
-  this.ballSpeed_X = 4;
+  this.ballSpeed_X = 5;
   this.ballSpeed_Y = 4;
   this.ballActualSpeed_X = this.ballSpeed_X;
   this.ballActualSpeed_Y = this.ballSpeed_Y;
@@ -108,7 +108,7 @@ function moveBall() {
   const racketPlayer_2 = document.querySelector('.racket-player2');
   if (settings.isCanBallMove) {
     settings.ballCurrentPosition.currentPos_X += settings.ballActualSpeed_X;
-    //Проврека не вылетел ли мяч за пределы правой границы поля
+    //Проверка не вылетел ли мяч за пределы правой границы поля
     
     if (settings.ballCurrentPosition.currentPos_X + settings.ballSize > settings.fieldWidth - settings.racketWidth
         && settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 > racketPlayer_2.getBoundingClientRect().top - fieldTopPosY
@@ -116,6 +116,14 @@ function moveBall() {
       settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
       settings.ballCurrentPosition.currentPos_X = settings.fieldWidth - settings.racketWidth - settings.ballSize;
     } 
+    //   else if (settings.ballCurrentPosition.currentPos_X  + settings.ballSize < settings.fieldWidth) {
+    //   settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
+    //   settings.ballCurrentPosition.currentPos_X = 0;
+    //   settings.isCanBallMove = !settings.isCanBallMove;
+    // }
+
+
+
     // else if (settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 < racketPlayer_2.getBoundingClientRect().top - fieldTopPosY
     //   || settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 > racketPlayer_2.getBoundingClientRect().bottom - fieldTopPosY
     //   || settings.ballCurrentPosition.currentPos_X + settings.ballSize > settings.fieldWidth - settings.racketWidth) {
@@ -124,18 +132,31 @@ function moveBall() {
     //   // settings.isCanBallMove = false;
     //   settings.playerScoreCounter_1++;
     // }
-    // Проврека не вылетел ли мяч за пределы левой границы поля
-    if (settings.ballCurrentPosition.currentPos_X < 0) {
-      settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
-      settings.ballCurrentPosition.currentPos_X = 0;
-    }
+    // Проверка не вылетел ли мяч за пределы левой границы поля
+                             
+console.log('currentPos_X', settings.ballCurrentPosition.currentPos_X)
+console.log(racketPlayer_1.getBoundingClientRect().top - fieldTopPosY)
+
+                              if (settings.ballCurrentPosition.currentPos_X < settings.racketWidth
+                                && settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 > racketPlayer_1.getBoundingClientRect().top - fieldTopPosY
+                                && settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 < racketPlayer_1.getBoundingClientRect().bottom - fieldTopPosY) {
+                              settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
+                              settings.ballCurrentPosition.currentPos_X = settings.racketWidth;
+                              } else if (settings.ballCurrentPosition.currentPos_X < 0) {
+                                  settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
+                                  settings.ballCurrentPosition.currentPos_X = 0;
+                                  settings.isCanBallMove = !settings.isCanBallMove;
+                                }
+
+
+
     settings.ballCurrentPosition.currentPos_Y += settings.ballActualSpeed_Y;
-    // Проврека не вылетел ли мяч за пределы нижней границы поля 
+    // Проверка не вылетел ли мяч за пределы нижней границы поля 
     if (settings.ballCurrentPosition.currentPos_Y + settings.ballSize > settings.fieldHeight) {
       settings.ballActualSpeed_Y = -settings.ballActualSpeed_Y;
       settings.ballCurrentPosition.currentPos_Y = settings.fieldHeight - settings.ballSize;
     }
-    // Проврека не вылетел ли мяч за пределы верхней границы поля
+    // Проверка не вылетел ли мяч за пределы верхней границы поля
     if (settings.ballCurrentPosition.currentPos_Y < 0) {
       settings.ballActualSpeed_Y = -settings.ballActualSpeed_Y;
       settings.ballCurrentPosition.currentPos_Y = 0;
@@ -195,9 +216,16 @@ window.addEventListener('keydown', moveRacket);
 
 
 
+function restart(e) {
+ if (e.code === 'Space') {
+  settings.isCanBallMove = !settings.isCanBallMove;
 
-
-
+  settings.ballCurrentPosition.currentPos_X = settings.ballPositionStart_X;
+  settings.ballCurrentPosition.currentPos_Y = settings.ballPositionStart_Y;
+  moveBall()
+ }
+}
+window.addEventListener('keydown', restart);
 
 
 
