@@ -54,6 +54,7 @@ body {
 }
 .field {
   position: relative;
+  /* overflow: hidden; */
 }
 .field__counter {
   font-size: 3rem;
@@ -74,7 +75,6 @@ body {
 }
 .ball {
   position: absolute;
-  transform: translate(-50%, -50%);
   border-radius: 50%;
   z-index: 1;
 }

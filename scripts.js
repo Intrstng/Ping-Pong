@@ -4,37 +4,59 @@ function Settings(field) {
   this.fieldWidth = 640;
   this.fieldHeight = 480;
   this.fieldColor = 'rgb(241, 210, 33)';
-  this.rocketWidth = '20px';
-  this.rocketHeight = '150px';
-  this.rocketPlayer1Color = 'rgb(41, 173, 85)';
-  this.rocketPlayer2Color = 'rgb(25, 0, 255)';
-  this.rocketPlayer1_initialPosY = 5;
-  this.rocketPlayer1_actualPosY = this.rocketPlayer1_initialPosY;
-  this.rocketPlayer2_initialPosY = 5;
-  this.rocketPlayer2_actualPosY = this.rocketPlayer2_initialPosY;
+  this.racketWidth = this.fieldWidth * 0.025;
+  this.racketHeight = this.fieldHeight * 0.26;
+  this.racketPlayer1Color = 'rgb(41, 173, 85)';
+  this.racketPlayer2Color = 'rgb(25, 0, 255)';
+  this.racketPlayer1_initialPosY = this.fieldWidth * 0.04;
+  this.racketPlayer1_actualPosY = this.racketPlayer1_initialPosY;
+  this.racketPlayer2_initialPosY = this.fieldHeight * 0.04;
+  this.racketPlayer2_actualPosY = this.racketPlayer2_initialPosY;
   this.scoreColor = 'rgba(33, 33, 33, 0.7)';
-  this.ballRadius = '15px';
+  this.ballSize = ((this.fieldWidth + this.fieldHeight) / 2) * 0.06;
   this.ballColor = 'rgb(255, 0, 0)';
-  this.ballPositionStart_X = this.field.getBoundingClientRect().top + (this.field.offsetWidth / 2);
-  this.ballPositionStart_Y = this.field.getBoundingClientRect().left + (this.field.offsetHeight / 2);
-  this.ballHitsCounter = 0;
+  this.ballPositionStart_X = (this.fieldWidth / 2) - this.ballSize / 2;
+  this.ballPositionStart_Y = (this.fieldHeight / 2) - this.ballSize / 2;
   this.ballCurrentPosition = {
     currentPos_X: this.ballPositionStart_X,
     currentPos_Y: this.ballPositionStart_Y,
   };
-  this.ballCurrentAcceleration = {
-    currentAcceleration_X: 0,
-    currentAcceleration_Y: 0,
-  };
-  this.ballSpeed = {
-    currentAcceleration_X: 0,
-    currentAcceleration_Y: 0,
-  };
-  this.ballSpeed = 5;
-  this.ballActualSpeed = this.ballSpeed;
+  this.rocketSpeed = 14;
+  this.ballSpeed_X = 4;
+  this.ballSpeed_Y = 4;
+  this.ballActualSpeed_X = this.ballSpeed_X;
+  this.ballActualSpeed_Y = this.ballSpeed_Y;
+  this.ballHitsCounter = 0;
+  this.playerScoreCounter_1 = 0;
+  this.playerScoreCounter_2 = 0;
+  this.isCanBallMove = true;
+  this.isCanRocketPlayer_1_Move = true;
+  this.isCanRocketPlayer_2_Move = true;
+  this.update = function() {
+    const ball = document.querySelector('.ball');
+    ball.style.left = this.ballCurrentPosition.currentPos_X + 'px';
+    ball.style.top = this.ballCurrentPosition.currentPos_Y + 'px';
+    document.querySelector('.racket-player1').style.top = this.racketPlayer1_actualPosY + 'px';
+    document.querySelector('.racket-player2').style.bottom = this.racketPlayer2_actualPosY + 'px';
+  }
 }
 
-
+function buildControls() {
+  const controls = document.createElement('div');
+  controls.className = 'controls';
+  const startBtn = document.createElement('button');
+  startBtn.className = 'start-btn start-btn_hover start-btn_active';
+  startBtn.innerHTML = `<img src="https://img.icons8.com/ios/20/null/ping-pong.png"/>Start!`;
+  const scores = document.createElement('div');
+  scores.className = 'scores';
+  scores.innerHTML = `<div class="scores__player1">1</div>
+                        <span>&#58</span>
+                          <div class="scores__player2">2</div>`;
+  controls.append(startBtn);
+  controls.append(scores);
+  document.body.append(controls);
+}
+window.onload = buildControls();
 
 function buildField() {
   const field = document.createElement('div');
@@ -52,7 +74,7 @@ function buildField() {
   const ball = document.createElement('div');
   ball.className = 'ball';
   field.append(ball);
-  const settings = new Settings(field);
+  settings = new Settings(field);
   addStylesToField(settings);
 }
 window.onload = buildField();
@@ -64,26 +86,124 @@ function addStylesToField(settings) {
   const racketPlayer_2 = document.querySelector('.racket-player2');
   field.style.width = settings.fieldWidth + 'px';
   field.style.height = settings.fieldHeight + 'px';
-  field.style.backgroundColor = settings.fieldColor
-  ball.style.width = settings.fieldHeight * 0.075 + 'px';
-  ball.style.height = settings.fieldHeight * 0.075 + 'px';
-  ball.style.top = settings.rocketPlayer1_actualPosY + '%';
-  ball.style.left = settings.rocketPlayer1_actualPosY + '%';
+  field.style.backgroundColor = settings.fieldColor;
+  ball.style.width = settings.ballSize + 'px';
+  ball.style.height = settings.ballSize + 'px';
+  ball.style.left = settings.ballPositionStart_X + 'px';
+  ball.style.top = settings.ballPositionStart_Y + 'px';
   ball.style.backgroundColor = settings.ballColor;
-  racketPlayer_1.style.width = settings.fieldWidth * 0.025 + 'px';
-  racketPlayer_1.style.height = settings.fieldHeight * 0.25 + 'px';
-  racketPlayer_1.style.top = settings.rocketPlayer1_actualPosY + '%';
-  racketPlayer_1.style.backgroundColor = settings.rocketPlayer1Color;
-  racketPlayer_2.style.width = settings.fieldWidth * 0.025 + 'px';
-  racketPlayer_2.style.height = settings.fieldHeight * 0.25 + 'px';
-  racketPlayer_2.style.bottom = settings.rocketPlayer2_actualPosY + '%';
-  racketPlayer_2.style.backgroundColor = settings.rocketPlayer2Color;
+  racketPlayer_1.style.width = settings.racketWidth + 'px';
+  racketPlayer_1.style.height = settings.racketHeight + 'px';
+  racketPlayer_1.style.top = settings.racketPlayer1_actualPosY + 'px';
+  racketPlayer_1.style.backgroundColor = settings.racketPlayer1Color;
+  racketPlayer_2.style.width = settings.racketWidth + 'px';
+  racketPlayer_2.style.height = settings.racketHeight + 'px';
+  racketPlayer_2.style.bottom = settings.racketPlayer2_actualPosY + 'px';
+  racketPlayer_2.style.backgroundColor = settings.racketPlayer2Color;
+}
 
-  racketPlayer_2.style.width = settings.fieldWidth * 0.025 + 'px';
-  racketPlayer_2.style.height = settings.fieldHeight * 0.25 + 'px';
+function moveBall() {
+  const fieldTopPosY = settings.field.getBoundingClientRect().top;
+  const racketPlayer_1 = document.querySelector('.racket-player1');
+  const racketPlayer_2 = document.querySelector('.racket-player2');
+  if (settings.isCanBallMove) {
+    settings.ballCurrentPosition.currentPos_X += settings.ballActualSpeed_X;
+    //Проврека не вылетел ли мяч за пределы правой границы поля
+    
+    if (settings.ballCurrentPosition.currentPos_X + settings.ballSize > settings.fieldWidth - settings.racketWidth
+        && settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 > racketPlayer_2.getBoundingClientRect().top - fieldTopPosY
+        && settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 < racketPlayer_2.getBoundingClientRect().bottom - fieldTopPosY) {
+      settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
+      settings.ballCurrentPosition.currentPos_X = settings.fieldWidth - settings.racketWidth - settings.ballSize;
+    } 
+    // else if (settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 < racketPlayer_2.getBoundingClientRect().top - fieldTopPosY
+    //   || settings.ballCurrentPosition.currentPos_Y + settings.ballSize / 2 > racketPlayer_2.getBoundingClientRect().bottom - fieldTopPosY
+    //   || settings.ballCurrentPosition.currentPos_X + settings.ballSize > settings.fieldWidth - settings.racketWidth) {
+    //   settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
+    //   settings.ballCurrentPosition.currentPos_X = settings.fieldWidth - settings.ballSize;
+    //   // settings.isCanBallMove = false;
+    //   settings.playerScoreCounter_1++;
+    // }
+    // Проврека не вылетел ли мяч за пределы левой границы поля
+    if (settings.ballCurrentPosition.currentPos_X < 0) {
+      settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
+      settings.ballCurrentPosition.currentPos_X = 0;
+    }
+    settings.ballCurrentPosition.currentPos_Y += settings.ballActualSpeed_Y;
+    // Проврека не вылетел ли мяч за пределы нижней границы поля 
+    if (settings.ballCurrentPosition.currentPos_Y + settings.ballSize > settings.fieldHeight) {
+      settings.ballActualSpeed_Y = -settings.ballActualSpeed_Y;
+      settings.ballCurrentPosition.currentPos_Y = settings.fieldHeight - settings.ballSize;
+    }
+    // Проврека не вылетел ли мяч за пределы верхней границы поля
+    if (settings.ballCurrentPosition.currentPos_Y < 0) {
+      settings.ballActualSpeed_Y = -settings.ballActualSpeed_Y;
+      settings.ballCurrentPosition.currentPos_Y = 0;
+    }
+  settings.update();
+  requestAnimationFrame(moveBall);
+  }
+}
+requestAnimationFrame(moveBall);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+function moveRacket(e) {
+  e.preventDefault();
+  const fieldTopPosY = settings.field.getBoundingClientRect().top;
+  const fieldBottomPosY = settings.field.getBoundingClientRect().bottom;
+  const racketPlayer_1 = document.querySelector('.racket-player1');
+  const racketPlayer_2 = document.querySelector('.racket-player2');
+  const keyPlayer_1 = e.code === 'ShiftLeft' ? -settings.rocketSpeed
+                    : e.code === 'ControlLeft' ? settings.rocketSpeed : false;
+  const keyPlayer_2 = e.code === 'ArrowUp' ? settings.rocketSpeed
+                    : e.code === 'ArrowDown' ? -settings.rocketSpeed : false;
+    if (keyPlayer_1) {
+      settings.racketPlayer1_actualPosY += keyPlayer_1;
+      if (e.code === 'ShiftLeft'
+          && racketPlayer_1.getBoundingClientRect().top + keyPlayer_1 < fieldTopPosY) {
+settings.racketPlayer1_actualPosY = 0;
+      } else if (e.code === 'ControlLeft'
+                  && racketPlayer_1.getBoundingClientRect().bottom + keyPlayer_1 > fieldBottomPosY) {
+          settings.racketPlayer1_actualPosY = settings.fieldHeight - settings.racketHeight;
+        } 
+    }
+    if (keyPlayer_2) {
+      settings.racketPlayer2_actualPosY += keyPlayer_2;
+      if (e.code === 'ArrowDown'
+          && racketPlayer_2.getBoundingClientRect().bottom - keyPlayer_2 > fieldBottomPosY) {
+        settings.racketPlayer2_actualPosY = 0;
+      } else if (e.code === 'ArrowUp'
+                && racketPlayer_2.getBoundingClientRect().top - keyPlayer_2 < fieldTopPosY) {
+          settings.racketPlayer2_actualPosY = settings.fieldHeight - settings.racketHeight;
+        }
+    }
 
 }
+window.addEventListener('keydown', moveRacket);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -91,3 +211,9 @@ function addStylesToField(settings) {
 window.addEventListener('click', function(e){
   console.log(e.clientX, e.clientY)
 })
+
+
+
+
+
+
