@@ -1,14 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik+Iso&display=swap');
-:root {
-  --width-field: 640px;
-  --height-field: 480px;
-}
 body {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
 }
 .start-btn > img {
   vertical-align: middle;
@@ -52,16 +49,24 @@ body {
   font-weight: bold;
   font-size: 2rem;
 }
+.scores > span  {
+  color: rgb(255, 0, 0);
+}
 .field {
   position: relative;
-  /* overflow: hidden; */
 }
 .field__counter {
-  font-size: 3rem;
+  width: 80%;
+  font-size: 6rem;
+  line-height: 5rem;
+  text-align: center;
+  letter-spacing: 0.25rem;
+  color:rgb(255, 255, 255);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 3;
 }
 .racket {
   position: absolute;
@@ -77,4 +82,10 @@ body {
   position: absolute;
   border-radius: 50%;
   z-index: 1;
+}
+.scores__player1 {
+  color:rgb(41, 173, 85);
+}
+.scores__player2 {
+  color:rgb(25, 0, 255);
 }
