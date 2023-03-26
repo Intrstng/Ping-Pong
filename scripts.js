@@ -155,7 +155,7 @@ function showScore(player, score) {
   const winner = document.querySelector('.field__counter');
   if (player === 'player1') {
     scorePlayer_1.textContent = score;
-    if (score >= 2) {
+    if (score >= 5) {
       winner.textContent = 'Player 1 Wins!';
       settings.isGameOver = true;
       stopAnimation(settings.reqAnimMoveBall);
@@ -166,7 +166,7 @@ function showScore(player, score) {
     }
   } else if (player === 'player2') {
     scorePlayer_2.textContent = score;
-    if (score >= 2) {
+    if (score >= 5) {
       winner.textContent = 'Player 2 Wins!';
       settings.isGameOver = true;
       stopAnimation(settings.reqAnimMoveBall);
