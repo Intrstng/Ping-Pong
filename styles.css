@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Iso&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 body {
   display: flex;
   flex-direction: column;
@@ -6,24 +6,26 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
 }
 .start-btn > img {
   vertical-align: middle;
-  margin-right: 8px;
+  margin-right: 12px;
 }
 .start-btn {
   flex-basis: 50%;
-  max-width: 130px;
-  padding: 10px 15px;
+  max-width: 145px;
+  padding: 12px 10px;
   font-size: 1.2rem;
   font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
   color:rgba(33, 33, 33, 0.7);
   background-color: rgb(89, 255, 0);
   box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.5);
   border: none;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.2rem;
 }
 .start-btn_hover:hover {
   transform: scale(1.05);
@@ -43,11 +45,12 @@ body {
 }
 .scores {
   display: flex;
-  width: 15%;
+  width: 20%;
   justify-content: space-between;
   align-self: center;
+  font-family: 'Orbitron', sans-serif;
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 2.8rem;
 }
 .scores > span  {
   color: rgb(255, 0, 0);
@@ -57,9 +60,10 @@ body {
 }
 .field__counter {
   width: 80%;
-  font-size: 6rem;
-  line-height: 5rem;
+  font-size: 5rem;
+  line-height: 5.2rem;
   text-align: center;
+  font-family: 'Orbitron', sans-serif;
   letter-spacing: 0.25rem;
   color:rgb(255, 255, 255);
   position: absolute;
