@@ -45,11 +45,6 @@ function Settings(field) {
     document.querySelector('.racket-player1').style.top = this.racketPlayer1_actualPosY + 'px';
     document.querySelector('.racket-player2').style.bottom = this.racketPlayer2_actualPosY + 'px';
   };
-  this.increaseBallSpeed = function() {
-    console.log(this.ballHitsCounter);
-    console.log(Math.round(this.ballActualSpeed_X * (1 + this.ballHitsCounter * 0.1)));
-    return this.ballActualSpeed_X;
-  };
 }
 function randomBallDirection_X(ballSpeed_X) {
   const randomNumber = Math.round(Math.random() * ballSpeed_X);
@@ -266,7 +261,6 @@ function moveBall() {
       settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
       settings.ballCurrentPosition.currentPos_X = settings.fieldWidth - settings.racketWidth - settings.ballSize;
       settings.ballHitsCounter++;
-      settings.ballActualSpeed_X = settings.increaseBallSpeed();
     } else if (settings.ballCurrentPosition.currentPos_X + settings.ballSize > settings.fieldWidth) {
         settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
         settings.ballCurrentPosition.currentPos_X = settings.fieldWidth - settings.ballSize;
@@ -285,7 +279,6 @@ function moveBall() {
     settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
     settings.ballCurrentPosition.currentPos_X = settings.racketWidth;
     settings.ballHitsCounter++;
-    settings.ballActualSpeed_X = settings.increaseBallSpeed();
     } else if (settings.ballCurrentPosition.currentPos_X < 0) {
         settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
         settings.ballCurrentPosition.currentPos_X = 0;
@@ -342,7 +335,3 @@ function moveRacket() {
       }
       window.requestAnimationFrame(moveRacket);
 }
-
-window.addEventListener('click', function(e){
-  console.log(e.clientX, e.clientY)
-})
