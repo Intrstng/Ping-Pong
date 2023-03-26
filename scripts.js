@@ -13,7 +13,7 @@ function Settings(field) {
   this.racketPlayer2_initialPosY = this.fieldHeight * 0.04;
   this.racketPlayer2_actualPosY = this.racketPlayer2_initialPosY;
   this.scoreColor = 'rgba(33, 33, 33, 0.7)';
-  this.ballSize = ((this.fieldWidth + this.fieldHeight) / 2) * 0.06;
+  this.ballSize = ((this.fieldWidth + this.fieldHeight) / 2) * 0.05;
   this.ballColor = 'rgb(255, 0, 0)';
   this.ballPositionStart_X = (this.fieldWidth / 2) - this.ballSize / 2;
   this.ballPositionStart_Y = (this.fieldHeight / 2) - this.ballSize / 2;
@@ -21,8 +21,8 @@ function Settings(field) {
     currentPos_X: this.ballPositionStart_X,
     currentPos_Y: this.ballPositionStart_Y,
   };
-  this.racketSpeed = 18;
-  this.ballHitsCounter = 1;
+  this.racketSpeed = 5;
+  this.ballHitsCounter = 0;
   this.ballSpeed_X = randomBallDirection_X(5);
   this.ballSpeed_Y = randomBallDirection_Y(-4, 4);
   this.ballActualSpeed_X = this.ballSpeed_X;
@@ -31,16 +31,25 @@ function Settings(field) {
   this.playerScoreCounter_2 = 0;
   this.startCountdown = 3;
   this.isCanBallMove = true;
+  this.isCanRacketMove = true;
+  this.isUpPressedPlayer_1 = false;
+  this.isDownPressedPlayer_1 = false;
+  this.isUpPressedPlayer_2 = false;
+  this.isDownPressedPlayer_2 = false;
   this.isGameOver = false;
-  this.isCanRocketPlayer_1_Move = true;
-  this.isCanRocketPlayer_2_Move = true;
+  this.initialStart = true;
   this.update = function() {
     const ball = document.querySelector('.ball');
     ball.style.left = this.ballCurrentPosition.currentPos_X + 'px';
     ball.style.top = this.ballCurrentPosition.currentPos_Y + 'px';
     document.querySelector('.racket-player1').style.top = this.racketPlayer1_actualPosY + 'px';
     document.querySelector('.racket-player2').style.bottom = this.racketPlayer2_actualPosY + 'px';
-  }
+  };
+  this.increaseBallSpeed = function() {
+    console.log(this.ballHitsCounter);
+    console.log(Math.round(this.ballActualSpeed_X * (1 + this.ballHitsCounter * 0.1)));
+    return this.ballActualSpeed_X;
+  };
 }
 function randomBallDirection_X(ballSpeed_X) {
   const randomNumber = Math.round(Math.random() * ballSpeed_X);
@@ -50,48 +59,12 @@ function randomBallDirection_X(ballSpeed_X) {
 function randomBallDirection_Y(min, max) {
   return Math.round(min - 0.5 + Math.random() * (max - min + 1));
 }
-
-function startGame() {
-  settings.playerScoreCounter_1 = 0;
-  settings.playerScoreCounter_2 = 0;
-  settings.reqAnimMoveBall = window.requestAnimationFrame(moveBall);
-}
-
-function showScore(player, score) {
-  const scorePlayer_1 = document.querySelector('.scores__player1');
-  const scorePlayer_2 = document.querySelector('.scores__player2');
-  const winner = document.querySelector('.field__counter');
-  if (player === 'player1') {
-    scorePlayer_1.textContent = score;
-    if (score >= 5) {
-      winner.textContent = 'Player 1 Wins!';
-                                  settings.isGameOver = true;
-                                  stopAnimation(settings.reqAnimMoveBall);
-                                  const newGameTimer = setTimeout(() => {
-                                    refreshGameplay();
-                                    clearTimeout(newGameTimer);
-                                  }, 2000);
-    }
-  } else if (player === 'player2') {
-    scorePlayer_2.textContent = score;
-    if (score >= 5) {
-      winner.textContent = 'Player 2 Wins!';
-                                  settings.isGameOver = true;
-                                  stopAnimation(settings.reqAnimMoveBall);
-                                  const newGameTimer = setTimeout(() => {
-                                    refreshGameplay();
-                                    clearTimeout(newGameTimer);
-                                  }, 2000);
-    }
-  }
-}
-
 function buildControls() {
   const controls = document.createElement('div');
   controls.className = 'controls';
   const startBtn = document.createElement('button');
   startBtn.className = 'start-btn start-btn_hover start-btn_active';
-  startBtn.innerHTML = `<img src="https://img.icons8.com/ios/20/null/ping-pong.png"/>Start!`;
+  startBtn.innerHTML = /* `<img src="https://img.icons8.com/ios/20/null/ping-pong.png"/>Start!`; */'Start!';
   const scores = document.createElement('div');
   scores.className = 'scores';
   scores.innerHTML = `<div class="scores__player1">0</div>
@@ -148,9 +121,140 @@ function addStylesToField(settings) {
   racketPlayer_2.style.backgroundColor = settings.racketPlayer2_color;
 }
 
+function stopAnimation(reqAnim) {
+  window.cancelAnimationFrame(reqAnim);
+}
+
+function startGame() {
+  settings.playerScoreCounter_1 = 0;
+  settings.playerScoreCounter_2 = 0;
+  settings.initialStart = true;
+  settings.reqAnimMoveBall = window.requestAnimationFrame(moveBall);
+}
+
+function startTimer(duration, fn) {
+  if (!settings.isGameOver) {
+    const startCountdown = document.querySelector('.field__counter');
+    settings.ballHitsCounter = 1;                                
+    let timer = duration;
+    const intervalStartCountdown = setInterval(function () {
+      startCountdown.textContent = timer;
+      if (--timer < 0) {
+        clearInterval(intervalStartCountdown);
+        startCountdown.textContent = 'Start!';
+        const timerStartCountdown = setTimeout(() => {
+          startCountdown.textContent = '';
+          fn();
+          settings.initialStart && moveRacket();
+          settings.initialStart = false;              
+          clearTimeout(timerStartCountdown);
+        }, 600)
+      }
+    }, 600);
+  }
+}
+
+function showScore(player, score) {
+  const scorePlayer_1 = document.querySelector('.scores__player1');
+  const scorePlayer_2 = document.querySelector('.scores__player2');
+  const winner = document.querySelector('.field__counter');
+  if (player === 'player1') {
+    scorePlayer_1.textContent = score;
+    if (score >= 5) {
+      winner.textContent = 'Player 1 Wins!';
+      settings.isGameOver = true;
+      stopAnimation(settings.reqAnimMoveBall);
+      const newGameTimer = setTimeout(() => {
+        refreshGameplay();
+        clearTimeout(newGameTimer);
+      }, 2000);
+    }
+  } else if (player === 'player2') {
+    scorePlayer_2.textContent = score;
+    if (score >= 5) {
+      winner.textContent = 'Player 2 Wins!';
+      settings.isGameOver = true;
+      stopAnimation(settings.reqAnimMoveBall);
+      const newGameTimer = setTimeout(() => {
+        refreshGameplay();
+        clearTimeout(newGameTimer);
+      }, 2000);
+    }
+  }
+}
+
+function restart() {
+  const racketPlayer_1 = document.querySelector('.racket-player1');
+  const racketPlayer_2 = document.querySelector('.racket-player2');
+  settings.isCanBallMove = !settings.isCanBallMove;
+  settings.isCanRacketMove = !settings.isCanRacketMove;
+  settings.ballCurrentPosition.currentPos_X = settings.ballPositionStart_X;
+  settings.ballCurrentPosition.currentPos_Y = settings.ballPositionStart_Y;
+  racketPlayer_1.style.top = settings.racketPlayer1_actualPosY;
+  racketPlayer_2.style.bottom = settings.racketPlayer2_actualPosY;
+  moveBall();
+}
+
+function refreshGameplay() {
+  document.querySelector('.scores__player1').textContent = 0;
+  document.querySelector('.scores__player2').textContent = 0;
+  document.querySelector('.field__counter').textContent = 'Press Start! to play a new game';
+  settings.isGameOver = !settings.isGameOver;
+  settings.isCanBallMove = true;
+  settings.ballCurrentPosition.currentPos_X = settings.ballPositionStart_X;
+  settings.ballCurrentPosition.currentPos_Y = settings.ballPositionStart_Y;
+  settings.racketPlayer1_actualPos = settings.racketPlayer1_initialPosY;
+  settings.racketPlayer2_actualPos = settings.racketPlayer2_initialPosY;
+  settings.update();
+}
+
+function keyDownHandler(e) {
+  if (settings.isCanRacketMove) {
+    switch(e.code){
+      case 'ShiftLeft': settings.isUpPressedPlayer_1 = true;
+      break;
+      case 'ArrowUp': settings.isUpPressedPlayer_2 = true;
+      break;
+      case 'ControlLeft': settings.isDownPressedPlayer_1 = true;
+      break;
+      case 'ArrowDown': settings.isDownPressedPlayer_2 = true;
+      break;
+      default: false;
+    }
+  } else if (!settings.isCanRacketMove) { //Disable rackets movement between games
+    switch(e.code){
+      case 'ShiftLeft': settings.isUpPressedPlayer_1 = false;
+      break;
+      case 'ArrowUp': settings.isUpPressedPlayer_2 = false;
+      break;
+      case 'ControlLeft': settings.isDownPressedPlayer_1 = false;
+      break;
+      case 'ArrowDown': settings.isDownPressedPlayer_2 = false;
+      break;
+      default: false;
+    }
+  }
+
+}
+document.addEventListener('keydown', keyDownHandler);
+
+function keyUpHandler(e) {
+  switch(e.code) {
+    case 'ShiftLeft': settings.isUpPressedPlayer_1 = false;
+    break;
+    case 'ArrowUp': settings.isUpPressedPlayer_2 = false;
+    break;
+    case 'ControlLeft': settings.isDownPressedPlayer_1 = false;
+    break;
+    case 'ArrowDown': settings.isDownPressedPlayer_2 = false;
+    break;
+    default: false;
+  }
+}
+document.addEventListener("keyup", keyUpHandler);
+
 function moveBall() {
   const fieldTopPosY = settings.field.getBoundingClientRect().top;
-  // const fieldLeftPosX = settings.field.getBoundingClientRect().left;
   const racketPlayer_1 = document.querySelector('.racket-player1');
   const racketPlayer_2 = document.querySelector('.racket-player2');
   if (settings.isCanBallMove) {
@@ -162,6 +266,7 @@ function moveBall() {
       settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
       settings.ballCurrentPosition.currentPos_X = settings.fieldWidth - settings.racketWidth - settings.ballSize;
       settings.ballHitsCounter++;
+                            settings.ballActualSpeed_X = settings.increaseBallSpeed();
                                   // settings.ballCurrentPosition.currentPos_X += 1;  
                                   // settings.update();  
                                   // console.log(settings.ballHitsCounter)
@@ -169,13 +274,9 @@ function moveBall() {
         settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
         settings.ballCurrentPosition.currentPos_X = settings.fieldWidth - settings.ballSize;
         settings.isCanBallMove = !settings.isCanBallMove;
-        window.removeEventListener('keydown', moveRacket);
+        settings.isCanRacketMove = !settings.isCanRacketMove;
+        window.removeEventListener('keydown', keyDownHandler);
         settings.playerScoreCounter_1++;
-
-
-
-
-
         showScore('player1', settings.playerScoreCounter_1);
         startTimer(settings.startCountdown, restart);
         stopAnimation(settings.reqAnimMoveBall);
@@ -187,6 +288,7 @@ function moveBall() {
     settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
     settings.ballCurrentPosition.currentPos_X = settings.racketWidth;
     settings.ballHitsCounter++;
+                            settings.ballActualSpeed_X = settings.increaseBallSpeed();
                                 // settings.ballCurrentPosition.currentPos_X += 1;
                                 // settings.update();
                                 // console.log(settings.ballHitsCounter)
@@ -194,16 +296,13 @@ function moveBall() {
         settings.ballActualSpeed_X = -settings.ballActualSpeed_X;
         settings.ballCurrentPosition.currentPos_X = 0;
         settings.isCanBallMove = !settings.isCanBallMove;
-        window.removeEventListener('keydown', moveRacket);
+        settings.isCanRacketMove = !settings.isCanRacketMove;
+        window.removeEventListener('keydown', keyDownHandler);
         settings.playerScoreCounter_2++;
-
-
-
         showScore('player2', settings.playerScoreCounter_2);
         startTimer(settings.startCountdown, restart);
         stopAnimation(settings.reqAnimMoveBall);
       }
-
     settings.ballCurrentPosition.currentPos_Y += settings.ballActualSpeed_Y;
     // Проверка не вылетел ли мяч за пределы нижней границы поля 
     if (settings.ballCurrentPosition.currentPos_Y + settings.ballSize > settings.fieldHeight) {
@@ -216,116 +315,39 @@ function moveBall() {
       settings.ballCurrentPosition.currentPos_Y = 0;
     }
     settings.update();
-                                settings.reqAnimMoveBall = window.requestAnimationFrame(moveBall);
+    settings.reqAnimMoveBall = window.requestAnimationFrame(moveBall);
   }
 }
 
-
-function startTimer(duration, fn) {
-  console.log('Start!')
-  if (!settings.isGameOver) {
-    const startCountdown = document.querySelector('.field__counter');
-    settings.ballHitsCounter = 1;                                
-    let timer = duration;
-    const intervalStartCountdown = setInterval(function () {
-      startCountdown.textContent = timer;
-      if (--timer < 0) {
-        clearInterval(intervalStartCountdown);
-        startCountdown.textContent = 'Start!';
-        fn();
-        const timerStartCountdown = setTimeout(() => {
-          startCountdown.textContent = '';
-                                          window.addEventListener('keydown', moveRacket);
-          clearTimeout(timerStartCountdown);
-        }, 600)
-      }
-    }, 600);
-  }
-}
-
-
-
-function moveRacket(e) {
-  e.preventDefault();
-  const fieldTopPosY = settings.field.getBoundingClientRect().top;
-  const fieldBottomPosY = settings.field.getBoundingClientRect().bottom;
-  const racketPlayer_1 = document.querySelector('.racket-player1');
-  const racketPlayer_2 = document.querySelector('.racket-player2');
-  const keyPlayer_1 = e.code === 'ShiftLeft' ? -settings.racketSpeed
-                    : e.code === 'ControlLeft' ? settings.racketSpeed : false;
-  const keyPlayer_2 = e.code === 'ArrowUp' ? settings.racketSpeed
-                    : e.code === 'ArrowDown' ? -settings.racketSpeed : false;
-    if (keyPlayer_1) {
-      settings.racketPlayer1_actualPosY += keyPlayer_1;
-      if (e.code === 'ShiftLeft'
-          && racketPlayer_1.getBoundingClientRect().top + keyPlayer_1 < fieldTopPosY) {
-settings.racketPlayer1_actualPosY = 0;
-      } else if (e.code === 'ControlLeft'
-                  && racketPlayer_1.getBoundingClientRect().bottom + keyPlayer_1 > fieldBottomPosY) {
+function moveRacket() {
+    const fieldTopPosY = settings.field.getBoundingClientRect().top;
+    const fieldBottomPosY = settings.field.getBoundingClientRect().bottom;
+    const racketPlayer_1 = document.querySelector('.racket-player1');
+    const racketPlayer_2 = document.querySelector('.racket-player2');
+      if (settings.isUpPressedPlayer_1) {
+        settings.racketPlayer1_actualPosY -= settings.racketSpeed;
+        if (settings.isUpPressedPlayer_1 && racketPlayer_1.getBoundingClientRect().top - settings.racketSpeed < fieldTopPosY) {
+          settings.racketPlayer1_actualPosY = 0;
+        }
+      } else if (settings.isDownPressedPlayer_1) {
+        settings.racketPlayer1_actualPosY += settings.racketSpeed;
+        if (racketPlayer_1.getBoundingClientRect().bottom + settings.racketSpeed > fieldBottomPosY) {
           settings.racketPlayer1_actualPosY = settings.fieldHeight - settings.racketHeight;
         } 
-    }
-    if (keyPlayer_2) {
-      settings.racketPlayer2_actualPosY += keyPlayer_2;
-      if (e.code === 'ArrowDown'
-          && racketPlayer_2.getBoundingClientRect().bottom - keyPlayer_2 > fieldBottomPosY) {
-        settings.racketPlayer2_actualPosY = 0;
-      } else if (e.code === 'ArrowUp'
-                && racketPlayer_2.getBoundingClientRect().top - keyPlayer_2 < fieldTopPosY) {
-          settings.racketPlayer2_actualPosY = settings.fieldHeight - settings.racketHeight;
+      }
+      if (settings.isDownPressedPlayer_2) {
+        settings.racketPlayer2_actualPosY -= settings.racketSpeed;
+        if (racketPlayer_2.getBoundingClientRect().bottom + settings.racketSpeed > fieldBottomPosY) {
+          settings.racketPlayer2_actualPosY = 0;
         }
-    }
+      } else if (settings.isUpPressedPlayer_2) {
+        settings.racketPlayer2_actualPosY += settings.racketSpeed;
+        if (racketPlayer_2.getBoundingClientRect().top - settings.racketSpeed < fieldTopPosY) {
+          settings.racketPlayer2_actualPosY = settings.fieldHeight - settings.racketHeight;
+        } 
+      }
+      window.requestAnimationFrame(moveRacket);
 }
-
-
-// const ball = document.querySelector('.ball');
-// const startCountdown = document.querySelector('.field__counter');
-// let timer = duration;
-// ball.style.display = 'block';
-
-function stopAnimation(reqAnim) {
-  window.cancelAnimationFrame(reqAnim);
-}
-
-
-function restart() {
-  const racketPlayer_1 = document.querySelector('.racket-player1');
-  const racketPlayer_2 = document.querySelector('.racket-player2');
-    settings.isCanBallMove = !settings.isCanBallMove;
-    // console.log(settings.ballPositionStart_X)
-    // console.log(settings.ballPositionStart_Y)
-
-
-    settings.ballCurrentPosition.currentPos_X = settings.ballPositionStart_X;
-    settings.ballCurrentPosition.currentPos_Y = settings.ballPositionStart_Y;
-                                                  // settings.ballActualSpeed_Y /= 2;
-    racketPlayer_1.style.top = settings.racketPlayer1_actualPosY;
-    racketPlayer_2.style.bottom = settings.racketPlayer2_actualPosY;
-    // window.addEventListener('keydown', moveRacket);
-    moveBall()
-                                                  // window.cancelAnimationFrame(settings.reqAnimMoveBall);
-}
-
-
-
-function refreshGameplay() {
-  document.querySelector('.scores__player1').textContent = 0;
-  document.querySelector('.scores__player2').textContent = 0;
-  document.querySelector('.field__counter').textContent = 'Press start to play a new game';
-  settings.isGameOver = !settings.isGameOver;
-  settings.isCanBallMove = true;
-  settings.ballCurrentPosition.currentPos_X = settings.ballPositionStart_X;
-  settings.ballCurrentPosition.currentPos_Y = settings.ballPositionStart_Y;
-  settings.racketPlayer1_actualPos = settings.racketPlayer1_initialPosY;
-  settings.racketPlayer2_actualPos = settings.racketPlayer2_initialPosY;
-  settings.update();
-}
-
-
-
-
-
-
 
 window.addEventListener('click', function(e){
   console.log(e.clientX, e.clientY)
