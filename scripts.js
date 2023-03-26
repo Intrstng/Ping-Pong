@@ -21,9 +21,9 @@ function Settings(field) {
     currentPos_X: this.ballPositionStart_X,
     currentPos_Y: this.ballPositionStart_Y,
   };
-  this.racketSpeed = 5;
+  this.racketSpeed = 8;
   this.ballHitsCounter = 0;
-  this.ballSpeed_X = randomBallDirection_X(5);
+  this.ballSpeed_X = randomBallDirection_X(7);
   this.ballSpeed_Y = randomBallDirection_Y(-4, 4);
   this.ballActualSpeed_X = this.ballSpeed_X;
   this.ballActualSpeed_Y = this.ballSpeed_Y;
