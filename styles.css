@@ -11,6 +11,7 @@ body {
 }
 .start-btn > img {
   vertical-align: middle;
+  margin-right: 0.5rem;
 }
 .start-btn {
   flex-basis: 50%;
