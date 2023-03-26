@@ -48,6 +48,7 @@ body {
 }
 .scores {
   display: flex;
+  margin: 0.8rem 0;
   width: 20%;
   justify-content: space-between;
   align-self: center;
@@ -60,6 +61,7 @@ body {
 }
 .field {
   position: relative;
+  margin-bottom: 3rem;
 }
 .field__counter {
   width: 80%;
