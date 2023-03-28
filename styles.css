@@ -1,40 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Iso&display=swap');
-:root {
-  --width-field: 640px;
-  --height-field: 480px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 body {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+  background-color: rgb(113, 218, 218);
 }
 .start-btn > img {
   vertical-align: middle;
-  margin-right: 8px;
+  margin-right: 0.5rem;
 }
 .start-btn {
   flex-basis: 50%;
-  max-width: 130px;
-  padding: 10px 15px;
+  max-width: 9rem;
+  padding: 0.7rem 0.6rem;
   font-size: 1.2rem;
   font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
   color:rgba(33, 33, 33, 0.7);
-  background-color: rgb(89, 255, 0);
+  background-color: rgb(255, 127, 80);
   box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.5);
   border: none;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.2rem;
+  outline: none;
 }
 .start-btn_hover:hover {
   transform: scale(1.05);
   cursor: pointer;
-  background-color: rgba(89, 255, 0, 0.7);
+  background-color:  rgb(255, 217, 0);
+  color:rgb(41, 173, 85);
 }
 .start-btn_active:active {
-  background-color: rgba(255, 127, 80, 0.7);
+  background-color: rgba(135, 255, 80, 0.7);
+  color:rgb(255, 255, 255);
 }
 .controls {
   display: flex;
@@ -42,26 +45,35 @@ body {
   width: 70%;
   justify-content: flex-start;
   gap: 1rem;
-  margin-bottom: 1rem;
 }
 .scores {
   display: flex;
-  width: 15%;
+  width: 20%;
   justify-content: space-between;
   align-self: center;
+  font-family: 'Orbitron', sans-serif;
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 2.8rem;
+}
+.scores > span  {
+  color: rgb(255, 0, 0);
 }
 .field {
   position: relative;
-  /* overflow: hidden; */
 }
 .field__counter {
-  font-size: 3rem;
+  width: 80%;
+  font-size: 5rem;
+  line-height: 5.2rem;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.25rem;
+  color:rgb(255, 255, 255);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 3;
 }
 .racket {
   position: absolute;
@@ -77,4 +89,10 @@ body {
   position: absolute;
   border-radius: 50%;
   z-index: 1;
+}
+.scores__player1 {
+  color:rgb(41, 173, 85);
+}
+.scores__player2 {
+  color:rgb(25, 0, 255);
 }
