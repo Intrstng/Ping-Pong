@@ -3,9 +3,7 @@
 - Racket UP: **ShiftLeft**
 - Racket DOWN: **ControlLeft**
 
-***
-
 ## **Player 2 controls:**
 
-- Racket UP: **ArrowUp**
+- Racket UP: **ArrowUp**Cancel changes
 - Racket DOWN: **ArrowDown**
