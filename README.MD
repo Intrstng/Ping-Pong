@@ -5,5 +5,5 @@
 
 ## **Player 2 controls:**
 
-- Racket UP: **ArrowUp**Cancel changes
+- Racket UP: **ArrowUp**
 - Racket DOWN: **ArrowDown**
