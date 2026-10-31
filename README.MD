@@ -4,7 +4,7 @@
 Players control paddles via their keyboards, hitting the ball back and forth until a winning score is reached.
 The game features physics, collision detection, score tracking, a start timer, sound effects, and an automatic game restart mechanism.
 
-[Deploy](intrstng.github.io/Ping-Pong)
+[Deploy](https://intrstng.github.io/Ping-Pong/)
 
 ![Screenshot](./assets/gameplay.PNG)
 
